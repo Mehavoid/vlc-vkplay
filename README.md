@@ -5,7 +5,7 @@ A VLC playlist for [VKPlay](https://vkplay.live/) - live-streaming platform
 - [Check official wiki](https://wiki.videolan.org/Documentation:Building_Lua_Playlist_Scripts/#Introduction)
 
 ## Usage
-1. Copy [URL](https://github.com/Mehavoid/vlc-vkplay/blob/readme/README.md#faq) of channel
+1. Copy [URL](https://github.com/Mehavoid/vlc-vkplay#faq) of channel
 2. Open media dialog  
 `Media -> Open Network Stream...`
 3. Paste a network URL and click `play`
