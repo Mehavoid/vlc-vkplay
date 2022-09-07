@@ -1,4 +1,4 @@
-# VLC-WASD
+# VLC-VKPlay
 A VLC playlist for [VKPlay](https://vkplay.live/) - live-streaming platform
 
 ## Installation
