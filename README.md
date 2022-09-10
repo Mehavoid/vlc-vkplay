@@ -2,8 +2,8 @@
 A VLC playlist for [VKPlay](https://vkplay.live/) - live-streaming platform
 
 ## Installation
-- Download latest version from [Releases](https://github.com/Mehavoid/vlc-vkplay/releases) page.
-- [Check official wiki](https://wiki.videolan.org/Documentation:Building_Lua_Playlist_Scripts/#Introduction)
+1. Download latest version from [Releases](https://github.com/Mehavoid/vlc-vkplay/releases) page.
+2. Place script in a [directory](https://wiki.videolan.org/Documentation:Building_Lua_Playlist_Scripts/#Introduction), depending on your OS.
 
 ## Usage
 1. Copy [URL](https://github.com/Mehavoid/vlc-vkplay#faq) of channel
