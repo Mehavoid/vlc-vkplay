@@ -1,5 +1,5 @@
 # VLC-VKPlay
-A VLC playlist for [VKPlay](https://vkplay.live/) - live-streaming platform
+A VLC playlist parser for [VKPlay](https://vkplay.live/) — live-streaming platform
 
 ## Installation
 1. Download latest version from [Releases](https://github.com/Mehavoid/vlc-vkplay/releases) page.
@@ -9,7 +9,7 @@ A VLC playlist for [VKPlay](https://vkplay.live/) - live-streaming platform
 1. Copy [URL](https://github.com/Mehavoid/vlc-vkplay#faq) of channel
 2. Open media dialog  
 `Media -> Open Network Stream...`
-3. Paste a network URL and click `play`
+3. Paste a channel URL and click `play`
 
 ## F.A.Q
 - What URLs does it support?
