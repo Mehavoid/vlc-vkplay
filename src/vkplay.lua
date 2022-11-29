@@ -1,3 +1,13 @@
+local function contains(tab, key)
+  return tab[key] ~= nil
+end
+
+
+local function ternary(condition, True, False)
+  if condition then return True else return False end
+end
+
+
 local function filter(tab, callback)
   local filtered = {}
 
