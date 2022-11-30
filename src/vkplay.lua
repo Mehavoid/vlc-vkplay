@@ -69,13 +69,37 @@ VKPlay = {
       return container
     end
 
+    local user = ternary(
+      contains(container, "user"),
+      container.user,
+      {}
+    )
+
+    local artist = ternary(
+      contains(user, "nick"),
+      user.nick,
+      ""
+    )
+
+    local category = ternary(
+      contains(container, "category"),
+      container.category,
+      {}
+    )
+
+    local description = ternary(
+      contains(category, 'title'),
+      category.title,
+      ""
+    )
+
     local function callback(tab)
         return tab.type == "live_hls"
     end
 
     return {
-      artist = container.daNick,
-      description = container.category.title,
+      artist = artist,
+      description = description,
       name = container.title,
       path = filter(data[1].playerUrls, callback)[1].url,
     }
