@@ -84,5 +84,5 @@ function parse()
 
   local playlist = VKPlay.stream(channel)
 
-  return { playlist, options = { ":http-referrer="..vlc.access.."://"..vlc.path } }
+  return { playlist }
 end
