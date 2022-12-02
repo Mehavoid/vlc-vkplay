@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Lua
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt update --quiet
+          sudo apt install --quiet --yes --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+
+      - name: Build playlist parser
+        run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
+
+      - name: Generate SHA256 checksum
+        run: sha256sum --zero --binary vkplay-linux.luac > vkplay-linux.sha256
+
+      - name: Upload output file
+        uses: actions/upload-artifact@v3
+        with:
+          name: vkplay-linux
+          path: vkplay-linux.*
+
+
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Lua
+        run: |
+          export HOMEBREW_NO_ENV_HINTS=1
+          brew update --quiet
+          brew install --quiet lua@5.1
+
+      - name: Build playlist parser
+        run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
+
+      - name: Generate SHA256 checksum
+        run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256
+
+      - name: Upload output file
+        uses: actions/upload-artifact@v3
+        with:
+          name: vkplay-macos
+          path: vkplay-macos.*
+  
+
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Lua
+        run: |
+          choco install --no-progress --yes lua
+          echo 'C:\Program Files (x86)\Lua\5.1\' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+      - name: Build playlist parser
+        run: luac.exe -s -o vkplay-windows.luac src\vkplay.lua
+
+      - name: Generate SHA256 checksum
+        run: CertUtil -hashFile vkplay-windows.luac SHA256 > vkplay-windows.sha256
+
+      - name: Upload output file
+        uses: actions/upload-artifact@v3
+        with:
+          name: vkplay-windows
+          path: vkplay-windows.*
