@@ -20,14 +20,21 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Install VLC
-        run: |
+        run: >
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update
-          sudo apt install -y --no-install-recommends vlc
+          sudo apt install -y --no-install-recommends
+          vlc
+          libvlc-dev
+          vlc-plugin-base
+          vlc-plugin-video-output
+          vlc-plugin-access-extra
       - name: Build playlist parser
         run: >
-          vlc -I luaintf --lua-intf luac --lua-config
-          'luac={input="src/vkplay.lua",output="vkplay.luac"}'
+          vlc
+          -I luaintf
+          --lua-intf luac
+          --lua-config 'luac={input="src/vkplay.lua",output="vkplay.luac"}'
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
