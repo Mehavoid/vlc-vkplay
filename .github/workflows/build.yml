@@ -20,15 +20,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Install VLC
-        run: >
+        run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update
-          sudo apt install -y --no-install-recommends
-          vlc
-          libvlc-dev
-          vlc-plugin-base
-          vlc-plugin-video-output
-          vlc-plugin-access-extra
+          sudo apt install -y --no-install-recommends vlc
       - name: Build playlist parser
         run: >
           vlc
