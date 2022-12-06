@@ -23,11 +23,13 @@ jobs:
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update -qq
-          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+          sudo apt install -yq --no-install-suggests --no-install-recommends vlc
+#          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
       - name: Build playlist parser
-        run: |
-          lua -v
-          luac -v -o vkplay.luac src/vkplay.lua
+        run: vlc -I luaintf --lua-intf luac --lua-config 'luac={input="src/vkplay.lua",output="vkplay.luac"}'
+#        run: |
+#          lua -v
+#          luac -v -o vkplay.luac src/vkplay.lua
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
