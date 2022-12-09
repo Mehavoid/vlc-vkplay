@@ -37,8 +37,8 @@ jobs:
           brew install lua@5.1
       - name: Build playlist parser
         run: |
-          lua -v
-          luac -v
+          lua5.1 -v
+          luac5.1 -v
 #          luac -v -s -o vkplay-macos.luac src/vkplay.lua
       - name: Upload output file
         uses: actions/upload-artifact@v3
