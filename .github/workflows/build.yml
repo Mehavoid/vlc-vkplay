@@ -1,37 +1,45 @@
-# This is a basic workflow to help you get started with Actions
 name: CI
-# Controls when the workflow will run
+
 on:
-  # Triggers the workflow on push or pull request events but only for the "master" branch
   push:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  build_linux:
+    name: Build playlist parser for Linux
     runs-on: ubuntu-latest
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - name: Install VLC
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update -qq
-          sudo apt install -yq --no-install-suggests --no-install-recommends vlc
-#          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
       - name: Build playlist parser
-        run: vlc -I luaintf --lua-intf luac --lua-config 'luac={input="src/vkplay.lua",output="vkplay.luac"}'
-#        run: |
-#          lua -v
-#          luac -v -o vkplay.luac src/vkplay.lua
+      - run: luac -v -s -o vkplay.luac src/vkplay.lua
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
-          name: vkplay.luac
-          path: vkplay.luac
+          name: vkplay-linux.luac
+          path: vkplay-linux.luac
+  
+#  build_windows:
+#    name: Build playlist parser for Windows
+#    runs-on: windows-latest
+#    steps:
+#      - uses actions/checkout@v3
+#      - name: Install VLC
+#        run: |
+#          export DEBIAN_FRONTEND=noninteractive
+#          sudo apt update -qq
+#          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+#      - name: Build playlist parser
+#      - run: luac.exe -s -o vkplay.luac vkplay.lua
+#      - name: Upload output file
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: vkplay-windows.luac
+#          path: vkplay-windows.luac
