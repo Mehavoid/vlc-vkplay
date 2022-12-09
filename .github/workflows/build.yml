@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install VLC
+      - name: Install Lua
         run: |
           export DEBIAN_FRONTEND=noninteractive
           sudo apt update -qq
           sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
       - name: Build playlist parser
-        run: luac -v -s -o vkplay.luac src/vkplay.lua
+        run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
