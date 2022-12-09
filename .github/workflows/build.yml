@@ -9,7 +9,6 @@ on:
 
 jobs:
   build_linux:
-    name: Build playlist parser for Linux
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -27,7 +26,6 @@ jobs:
           path: vkplay-linux.luac
 
   build_macos:
-    name: Build playlist parser for MacOS
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
