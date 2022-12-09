@@ -25,6 +25,21 @@ jobs:
         with:
           name: vkplay-linux.luac
           path: vkplay-linux.luac
+
+  build_macos:
+    name: Build playlist parser for macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Lua
+        run: brew install lua@5.1
+      - name: Build playlist parser
+        run: luac -v -s -o vkplay-macos.luac src/vkplay.lua
+      - name: Upload output file
+        uses: actions/upload-artifact@v3
+        with:
+          name: vkplay-macos.luac
+          path: vkplay-macos.luac
   
 #  build_windows:
 #    name: Build playlist parser for Windows
