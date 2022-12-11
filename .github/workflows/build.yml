@@ -19,11 +19,13 @@ jobs:
           sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
       - name: Build playlist parser
         run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
+      - name: Generates SHA256 checksums
+        run: sha256sum -zb vkplay-linux.luac > vkplay-linux.SHA256SUM
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
-          name: vkplay-linux.luac
-          path: vkplay-linux.luac
+          name: vkplay-linux
+          path: vkplay-linux.*
 
   build_macos:
     runs-on: macos-latest
