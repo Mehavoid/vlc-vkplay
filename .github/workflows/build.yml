@@ -30,19 +30,28 @@ jobs:
   build_macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Lua
-        run: |
-          export HOMEBREW_NO_ENV_HINTS=1
-          brew update -q
-          brew install -q lua@5.1
-      - name: Build playlist parser
-        run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
-      - name: Upload output file
-        uses: actions/upload-artifact@v3
-        with:
-          name: vkplay-macos.luac
-          path: vkplay-macos.luac
+      - name: Test sha256
+        run: echo "123" > test.txt 
+      - name: Generates SHA256 checksums
+        run: sha256sum -zb test.txt > vkplay-macos.SHA256SUM
+
+
+#  build_macos:
+#    runs-on: macos-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: Install Lua
+#        run: |
+#          export HOMEBREW_NO_ENV_HINTS=1
+#          brew update -q
+#          brew install -q lua@5.1
+#      - name: Build playlist parser
+#        run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
+#      - name: Upload output file
+#        uses: actions/upload-artifact@v3
+#        with:
+#          name: vkplay-macos.luac
+#          path: vkplay-macos.luac
   
 #  build_windows:
 #    name: Build playlist parser for Windows
