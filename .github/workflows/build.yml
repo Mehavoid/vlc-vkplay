@@ -33,8 +33,7 @@ jobs:
       - name: Test sha256
         run: echo "123" > test.txt 
       - name: Generates SHA256 checksums
-        run: sha256sum -zb test.txt > vkplay-macos.SHA256SUM
-
+        run: shasum --algorithm 256 test.txt
 
 #  build_macos:
 #    runs-on: macos-latest
