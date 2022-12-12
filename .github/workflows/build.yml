@@ -46,17 +46,16 @@ jobs:
           name: vkplay-macos
           path: vkplay-macos.*
   
-#  build_windows:
-#    name: Build playlist parser for Windows
-#    runs-on: windows-latest
-#    steps:
-#      - uses actions/checkout@v3
-#      - name: Install VLC
-#        run: |
-#          export DEBIAN_FRONTEND=noninteractive
-#          sudo apt update -qq
-#          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
-#      - name: Build playlist parser
+  build_windows:
+    name: Build playlist parser for Windows
+    runs-on: windows-latest
+    steps:
+      - uses actions/checkout@v3
+      - name Test
+        run: echo 123 > test.txt
+      - name: Generate SHA256 checksum
+        run: CertUtil -hashFile test.txt SHA256
+
 #      - run: luac.exe -s -o vkplay.luac vkplay.lua
 #      - name: Upload output file
 #        uses: actions/upload-artifact@v3
