@@ -20,7 +20,7 @@ jobs:
       - name: Build playlist parser
         run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
       - name: Generate SHA256 checksum
-        run: sha256sum -zb vkplay-linux.luac > vkplay-linux.SHA256SUM
+        run: sha256sum --zero --binary vkplay-linux.luac > vkplay-linux.sha256.checksum
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
@@ -39,7 +39,7 @@ jobs:
       - name: Build playlist parser
         run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
       - name: Generate SHA256 checksum
-        run: shasum --algorithm 256 vkplay-macos.luac > vkplay-macos.SHA256SUM
+        run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256.checksum
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
