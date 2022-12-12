@@ -51,7 +51,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses actions/checkout@v3
-      - name Test
+      - name: Test
         run: echo 123 > test.txt
       - name: Generate SHA256 checksum
         run: CertUtil -hashFile test.txt SHA256
