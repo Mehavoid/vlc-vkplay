@@ -51,10 +51,14 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Test
-        run: echo 123 > test.txt
-      - name: Generate SHA256 checksum
-        run: CertUtil -hashFile test.txt SHA256
+      - name: Install Lua
+        run: choco install lua
+      - name: Version Lua
+        run: |
+          lua -v
+          luac -v
+#      - name: Generate SHA256 checksum
+#        run: CertUtil -hashFile test.txt SHA256
 
 #      - run: luac.exe -s -o vkplay.luac vkplay.lua
 #      - name: Upload output file
