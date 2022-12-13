@@ -52,11 +52,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install Lua
-        run: choco install lua
+        run: choco install lua --no-progress
       - name: Version Lua
         run: |
-          lua -v
-          luac -v
+          lua.exe -v
+          luac.exe -v
 #      - name: Generate SHA256 checksum
 #        run: CertUtil -hashFile test.txt SHA256
 
