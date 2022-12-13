@@ -56,8 +56,8 @@ jobs:
           refreshenv
       - name: Version Lua
         run: |
-          lua5.1.exe -v
-          luac5.1.exe -v
+          lua.exe -v
+          luac.exe -v
 #      - name: Generate SHA256 checksum
 #        run: CertUtil -hashFile test.txt SHA256
 
