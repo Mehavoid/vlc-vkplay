@@ -47,13 +47,12 @@ jobs:
           path: vkplay-macos.*
   
   build_windows:
-    name: Build playlist parser for Windows
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install Lua
         run: |
-          choco install --no-progress --yes --force lua
+          choco install --no-progress --yes lua
           refreshenv
       - name: Version Lua
         run: |
