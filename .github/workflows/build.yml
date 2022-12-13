@@ -12,15 +12,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install Lua
         run: |
           export DEBIAN_FRONTEND=noninteractive
-          sudo apt update -qq
-          sudo apt install -yq --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+          sudo apt update --quiet
+          sudo apt install --quiet --yes --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
+
       - name: Build playlist parser
         run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
+
       - name: Generate SHA256 checksum
         run: sha256sum --zero --binary vkplay-linux.luac > vkplay-linux.sha256.checksum
+
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
@@ -31,15 +35,19 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Install Lua
         run: |
           export HOMEBREW_NO_ENV_HINTS=1
-          brew update -q
-          brew install -q lua@5.1
+          brew update --quiet
+          brew install --quiet lua@5.1
+
       - name: Build playlist parser
         run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
+
       - name: Generate SHA256 checksum
         run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256.checksum
+
       - name: Upload output file
         uses: actions/upload-artifact@v3
         with:
@@ -56,8 +64,8 @@ jobs:
           refreshenv
       - name: Version Lua
         run: |
-          lua.exe -v
-          luac.exe -v
+          C:\Program Files (x86)\Lua\5.1\lua.exe -v
+          C:\Program Files (x86)\Lua\5.1\luac.exe -v
 #      - name: Generate SHA256 checksum
 #        run: CertUtil -hashFile test.txt SHA256
 
