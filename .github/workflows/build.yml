@@ -63,7 +63,7 @@ jobs:
           choco install --no-progress --yes lua
           echo 'C:\Program Files (x86)\Lua\5.1\' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
       - name: Build playlist parser
-      - run: luac.exe -s -o vkplay-windows.luac src\vkplay.lua
+        run: luac.exe -s -o vkplay-windows.luac src\vkplay.lua
       - name: Generate SHA256 checksum
         run: CertUtil -hashFile vkplay-windows.luac SHA256 > vkplay-windows.sha256
       - name: Upload output file
