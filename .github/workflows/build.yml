@@ -55,8 +55,8 @@ jobs:
         run: choco install lua --no-progress
       - name: Version Lua
         run: |
-          lua.exe -v
-          luac.exe -v
+          lua5.1.exe -v
+          luac5.1.exe -v
 #      - name: Generate SHA256 checksum
 #        run: CertUtil -hashFile test.txt SHA256
 
