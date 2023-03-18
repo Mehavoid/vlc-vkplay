@@ -44,67 +44,61 @@ end
 
 
 local LOG = "VKPlay: "
-local VKPlay = {}
 
 
-VKPlay = {
-  api_call = function(path)
-    local data, _, err = get_json("https://api.vkplay.live/v1/blog/"..path)
-
-    if err or data.error then
-      vlc.msg.err(LOG..(err or data.error))
-      return {}
-    end
-
+function api_call(path)
+  local data, _, _ = get_json("https://api.vkplay.live/v1/blog/"..path)
+  if data then
     return data
-  end,
+  end
+  return { }
+end
 
-  stream = function(channel)
-    local container = VKPlay.api_call(channel.."/public_video_stream?from=layer")
 
-    local data = container.data
+function broadcast(channel)
+  local container = api_call(channel.."/public_video_stream?from=layer")
+  local data = contains(container, "data") and container.data
+  if not data then
+    vlc.msg.err(LOG.."stream is currently offline")
+    return data
+  end
 
-    if not data or #data == 0 then
-      vlc.msg.info(LOG.."stream is currently offline")
-      return container
-    end
+  local user = ternary(
+    contains(container, "user"),
+    container.user,
+    {}
+  )
 
-    local user = ternary(
-      contains(container, "user"),
-      container.user,
-      {}
-    )
+  local artist = ternary(
+    contains(user, "nick"),
+    user.nick,
+    ""
+  )
 
-    local artist = ternary(
-      contains(user, "nick"),
-      user.nick,
-      ""
-    )
+  local category = ternary(
+    contains(container, "category"),
+    container.category,
+    {}
+  )
 
-    local category = ternary(
-      contains(container, "category"),
-      container.category,
-      {}
-    )
+  local description = ternary(
+    contains(category, 'title'),
+    category.title,
+    ""
+  )
 
-    local description = ternary(
-      contains(category, 'title'),
-      category.title,
-      ""
-    )
+  local function callback(tbl)
+      return tbl.type == "live_hls"
+  end
 
-    local function callback(tab)
-        return tab.type == "live_hls"
-    end
+  return {
+    artist = artist,
+    description = description,
+    name = container.title,
+    path = filter(data[1].playerUrls, callback)[1].url,
+  }
+end
 
-    return {
-      artist = artist,
-      description = description,
-      name = container.title,
-      path = filter(data[1].playerUrls, callback)[1].url,
-    }
-  end,
-}
 
 function probe()
   return (vlc.access == "http" or vlc.access == "https")
@@ -115,8 +109,5 @@ end
 function parse()
   local channel =
     vlc.path:match("^vkplay%.live/([^/?#]+)")
-
-  local playlist = VKPlay.stream(channel)
-
-  return { playlist }
+  return { broadcast(channel) }
 end
