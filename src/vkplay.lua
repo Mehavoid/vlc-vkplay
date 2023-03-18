@@ -100,6 +100,59 @@ function broadcast(channel)
 end
 
 
+function records(channel, record_id)
+  local container = api_call(channel.."/public_video_stream/record/"..record_id)
+
+  if not contains(container, "data") then
+    vlc.msg.err(LOG..record_id.." record not found")
+    return container
+  end
+
+  local record = container.data.record
+
+  local blog = ternary(
+    contains(record, "blog"),
+    record.blog,
+    {}
+  )
+
+  local owner = ternary(
+    contains(blog, "owner"),
+    blog.owner,
+    {}
+  )
+
+  local artist = ternary(
+    contains(owner, "displayName"),
+    owner.displayName,
+    ""
+  )
+
+  local category = ternary(
+    contains(record, "category"),
+    record.category,
+    {}
+  )
+
+  local description = ternary(
+    contains(category, 'title'),
+    category.title,
+    ""
+  )
+
+  local function callback(tbl)
+      return tbl.type == "full_hd"
+  end
+
+  return {
+    artist = artist,
+    description = description,
+    name = record.title,
+    path = filter(record.data[1].playerUrls, callback)[1].url,
+  }
+end
+
+
 function probe()
   return (vlc.access == "http" or vlc.access == "https")
     and vlc.path:match("^vkplay%.live/.+")
@@ -107,7 +160,12 @@ end
 
 
 function parse()
-  local channel =
-    vlc.path:match("^vkplay%.live/([^/?#]+)")
-  return { broadcast(channel) }
+  local channel, record_id =
+    vlc.path:match("^vkplay%.live/([^/?#]+)/record/([^/?#]+)")
+
+  vlc.msg.err("channel: "..channel)
+  vlc.msg.err("record_id: "..record_id)
+
+--  return { broadcast(channel) }
+  return { records(channel, record_id) }
 end
