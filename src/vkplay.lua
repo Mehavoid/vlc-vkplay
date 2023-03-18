@@ -19,6 +19,17 @@ local function filter(tab, callback)
 end
 
 
+local function match_all(str, pattern)
+  local matched = { }
+
+  for m in string.gmatch(str, pattern) do
+    table.insert(matched, m)
+  end
+
+  return unpack(matched)
+end
+
+
 local function get_json(url)
   local json = require("dkjson")
   local stream = vlc.stream(url)
@@ -100,6 +111,59 @@ local function broadcast(channel)
 end
 
 
+local function records(channel, record_id)
+  local container = api_call(channel.."/public_video_stream/record/"..record_id)
+
+  if not contains(container, "data") then
+    vlc.msg.err(LOG..record_id.." record not found")
+    return container
+  end
+
+  local record = container.data.record
+
+  local blog = ternary(
+    contains(record, "blog"),
+    record.blog,
+    {}
+  )
+
+  local owner = ternary(
+    contains(blog, "owner"),
+    blog.owner,
+    {}
+  )
+
+  local artist = ternary(
+    contains(owner, "displayName"),
+    owner.displayName,
+    ""
+  )
+
+  local category = ternary(
+    contains(record, "category"),
+    record.category,
+    {}
+  )
+
+  local description = ternary(
+    contains(category, 'title'),
+    category.title,
+    ""
+  )
+
+  local function callback(tbl)
+      return tbl.type == "full_hd"
+  end
+
+  return {
+    artist = artist,
+    description = description,
+    name = record.title,
+    path = filter(record.data[1].playerUrls, callback)[1].url,
+  }
+end
+
+
 function probe()
   return (vlc.access == "http" or vlc.access == "https")
     and vlc.path:match("^vkplay%.live/.+")
@@ -107,7 +171,11 @@ end
 
 
 function parse()
-  local channel =
-    vlc.path:match("^vkplay%.live/([^/?#]+)")
-  return { broadcast(channel) }
+  local channel, _, record_id = match_all(vlc.path, "/([^/?#]+)")
+
+  if not record_id then
+    return { broadcast(channel) }
+  else
+    return { records(channel, record_id) }
+  end
 end
