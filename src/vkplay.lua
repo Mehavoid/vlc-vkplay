@@ -173,9 +173,6 @@ end
 function parse()
   local channel, _, record_id = match_all(vlc.path, "/([^/?#]+)")
 
-  vlc.msg.err("channel: "..channel)
---  vlc.msg.err("record_id: "..record_id)
-
   if not record_id then
     return { broadcast(channel) }
   else
