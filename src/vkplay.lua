@@ -19,6 +19,17 @@ local function filter(tab, callback)
 end
 
 
+local function match_all(str, pattern)
+  local matched = { }
+
+  for m in string.gmatch(str, pattern) do
+    table.insert(matched, m)
+  end
+
+  return unpack(matched)
+end
+
+
 local function get_json(url)
   local json = require("dkjson")
   local stream = vlc.stream(url)
@@ -160,12 +171,14 @@ end
 
 
 function parse()
-  local channel, record_id =
-    vlc.path:match("^vkplay%.live/([^/?#]+)/record/([^/?#]+)")
+  local channel, _, record_id = match_all(vlc.path, "/([^/?#]+)")
 
   vlc.msg.err("channel: "..channel)
-  vlc.msg.err("record_id: "..record_id)
+--  vlc.msg.err("record_id: "..record_id)
 
---  return { broadcast(channel) }
-  return { records(channel, record_id) }
+  if not record_id then
+    return { broadcast(channel) }
+  else
+    return { records(channel, record_id) }
+  end
 end
