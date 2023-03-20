@@ -46,7 +46,7 @@ end
 local LOG = "VKPlay: "
 
 
-function api_call(path)
+local function api_call(path)
   local data, _, _ = get_json("https://api.vkplay.live/v1/blog/"..path)
   if data then
     return data
@@ -55,7 +55,7 @@ function api_call(path)
 end
 
 
-function broadcast(channel)
+local function broadcast(channel)
   local container = api_call(channel.."/public_video_stream?from=layer")
   local data = contains(container, "data") and container.data
   if not data then
