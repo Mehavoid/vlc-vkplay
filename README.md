@@ -16,6 +16,7 @@ A VLC playlist parser for [VKPlay](https://vkplay.live/) — live-streaming plat
 ```
 https://vkplay.live/maddyson
 https://vkplay.live/maddyson?share=stream_link
+https://vkplay.live/maddyson/record/eaacfda0-2432-4e81-8107-cb34358d3789?share=stream_link
 ```
 
 ## References
