@@ -111,7 +111,7 @@ function broadcast(channel)
 end
 
 
-function records(channel, record_id)
+local function records(channel, record_id)
   local container = api_call(channel.."/public_video_stream/record/"..record_id)
 
   if not contains(container, "data") then
