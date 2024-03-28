@@ -9,7 +9,7 @@ jobs:
   build_linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Lua
         run: |
@@ -24,16 +24,17 @@ jobs:
         run: sha256sum --zero --binary vkplay-linux.luac > vkplay-linux.sha256
 
       - name: Upload output file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vkplay-linux
           path: vkplay-linux.*
+          overwrite: true
 
 
   build_macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Lua
         run: |
@@ -48,16 +49,17 @@ jobs:
         run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256
 
       - name: Upload output file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vkplay-macos
           path: vkplay-macos.*
-  
+          overwrite: true
+
 
   build_windows:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Lua
         run: |
@@ -71,7 +73,8 @@ jobs:
         run: CertUtil -hashFile vkplay-windows.luac SHA256 > vkplay-windows.sha256
 
       - name: Upload output file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vkplay-windows
           path: vkplay-windows.*
+          overwrite: true
