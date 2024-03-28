@@ -40,7 +40,7 @@ jobs:
         run: |
           export HOMEBREW_NO_ENV_HINTS=1
           brew update --quiet
-          brew install --quiet lua@5.1
+          brew install --quiet lua
 
       - name: Build playlist parser
         run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
