@@ -1,18 +1,22 @@
-local function contains(tab, key)
-  return tab[key] ~= nil
+local function contains(tbl, key)
+  return tbl[key] ~= nil
 end
 
 
 local function ternary(condition, True, False)
-  if condition then return True else return False end
+  if condition then
+    return True
+  else
+    return False
+  end
 end
 
 
-local function filter(tab, callback)
+local function filter(tbl, callback)
   local filtered = {}
 
-  for i, v in ipairs(tab) do
-    if callback(v, i, tab) then table.insert(filtered, v) end
+  for i, v in ipairs(tbl) do
+    if callback(v, i, tbl) then table.insert(filtered, v) end
   end
 
   return filtered
@@ -20,7 +24,7 @@ end
 
 
 local function match_all(str, pattern)
-  local matched = { }
+  local matched = {}
 
   for m in string.gmatch(str, pattern) do
     table.insert(matched, m)
@@ -93,7 +97,7 @@ local function broadcast(channel)
   )
 
   local description = ternary(
-    contains(category, 'title'),
+    contains(category, "title"),
     category.title,
     ""
   )
@@ -146,7 +150,7 @@ local function records(channel, record_id)
   )
 
   local description = ternary(
-    contains(category, 'title'),
+    contains(category, "title"),
     category.title,
     ""
   )
