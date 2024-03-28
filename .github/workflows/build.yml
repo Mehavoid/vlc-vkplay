@@ -43,7 +43,7 @@ jobs:
           brew install --quiet lua
 
       - name: Build playlist parser
-        run: luac5.1 -v -s -o vkplay-macos.luac src/vkplay.lua
+        run: luac -v -s -o vkplay-macos.luac src/vkplay.lua
 
       - name: Generate SHA256 checksum
         run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256
