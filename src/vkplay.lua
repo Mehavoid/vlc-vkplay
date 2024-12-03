@@ -62,7 +62,7 @@ local LOG = "VKPlay: "
 
 
 local function api_call(path)
-  local data, _, _ = get_json("https://api.live.vkplay.ru/v1/blog/"..path)
+  local data, _, _ = get_json("https://api.live.vkvideo.ru/v1/blog/"..path)
   if data then
     return data
   end
@@ -170,7 +170,11 @@ end
 
 function probe()
   return (vlc.access == "http" or vlc.access == "https")
-    and (vlc.path:match("^vkplay%.live/.+") or vlc.path:match("^live%.vkplay%.ru/.+"))
+    and (
+      vlc.path:match("^vkplay%.live/.+") or
+      vlc.path:match("^live%.vkplay%.ru/.+") or
+      vlc.path:match("^live%.vkvideo%.ru/.+")
+    )
 end
 
 

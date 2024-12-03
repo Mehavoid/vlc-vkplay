@@ -1,5 +1,5 @@
 # VLC-VKPlay
-A VLC playlist parser for [VKPlay](https://live.vkplay.ru/) — live-streaming platform
+A VLC playlist parser for [VKPlay](https://live.vkvideo.ru/) — live-streaming platform
 
 ## Installation
 1. Download latest version from [Releases](https://github.com/Mehavoid/vlc-vkplay/releases) page.
@@ -14,9 +14,9 @@ A VLC playlist parser for [VKPlay](https://live.vkplay.ru/) — live-streaming p
 ## F.A.Q
 - What URLs does it support?
 ```
-https://live.vkplay.ru/maddyson
-https://live.vkplay.ru/maddyson?share=stream_link
-https://live.vkplay.ru/maddyson/record/eaacfda0-2432-4e81-8107-cb34358d3789?share=stream_link
+https://live.vkvideo.ru/maddyson
+https://live.vkvideo.ru/maddyson?share=stream_link
+https://live.vkvideo.ru/maddyson/record/eaacfda0-2432-4e81-8107-cb34358d3789?share=stream_link
 ```
 
 ## References
