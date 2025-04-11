@@ -1,15 +1,6 @@
-local function contains(tbl, key)
-  return tbl[key] ~= nil
-end
+local json = require("dkjson")
 
-
-local function ternary(condition, True, False)
-  if condition then
-    return True
-  else
-    return False
-  end
-end
+local LOG = "VKPlay: "
 
 
 local function filter(tbl, callback)
@@ -35,146 +26,97 @@ end
 
 
 local function get_json(url)
-  local json = require("dkjson")
   local stream = vlc.stream(url)
 
   if not stream then
-    return nil, nil, "Failed create vlc stream"
+    return nil, "Failed to create VLC stream"
   end
 
-  local string = ""
-
+  local lines = {}
   while true do
     local line = stream:readline()
-
     if not line then
       break
     end
-
-    string = string..line
+    table.insert(lines, line)
   end
 
-  return json.decode(string)
+  local data, _, error = json.decode(table.concat(lines, "\n"))
+
+  if not data then
+    return nil, "JSON decode error: "..(error or "unknown error")
+  end
+
+  return data, nil
 end
 
 
-local LOG = "VKPlay: "
-
-
 local function api_call(path)
-  local data, _, _ = get_json("https://api.live.vkvideo.ru/v1/blog/"..path)
-  if data then
-    return data
+  local data, error = get_json("https://api.live.vkvideo.ru/v1/blog/"..path)
+  if not data then
+    vlc.msg.err(LOG.."API call failed: "..error)
+    return {}
   end
-  return { }
+  return data
 end
 
 
 local function broadcast(channel)
   local container = api_call(channel.."/public_video_stream?from=layer")
-  local data = contains(container, "data") and container.data
+  local data = container and container.data
   if not data then
-    vlc.msg.err(LOG.."stream is currently offline")
-    return data
+    vlc.msg.err(LOG.."Stream is currently offline or no data")
+    return nil
   end
 
-  local user = ternary(
-    contains(container, "user"),
-    container.user,
-    {}
-  )
+  local playlist = filter(
+    data[1].playerUrls or {},
+    function(p) return p.type == "live_hls" end)[1]
 
-  local artist = ternary(
-    contains(user, "nick"),
-    user.nick,
-    ""
-  )
-
-  local category = ternary(
-    contains(container, "category"),
-    container.category,
-    {}
-  )
-
-  local description = ternary(
-    contains(category, "title"),
-    category.title,
-    ""
-  )
-
-  local function callback(tbl)
-      return tbl.type == "live_hls"
+  if not playlist then
+    return nil
   end
 
   return {
-    artist = artist,
-    description = description,
+    artist = container.user and container.user.nick,
+    description = container.category and container.category.title,
     name = container.title,
-    path = filter(data[1].playerUrls, callback)[1].url,
+    path = playlist.url,
   }
 end
 
 
 local function records(channel, record_id)
   local container = api_call(channel.."/public_video_stream/record/"..record_id)
-
-  if not contains(container, "data") then
-    vlc.msg.err(LOG..record_id.." record not found")
-    return container
+  local record = container and container.data and container.data.record
+  if not record then
+    vlc.msg.err(LOG.."Record not found: "..record_id)
+    return nil
   end
 
-  local record = container.data.record
+  local playlist = filter(
+    record.data[1].playerUrls or {},
+    function(p) return p.type == "full_hd" end)[1]
 
-  local blog = ternary(
-    contains(record, "blog"),
-    record.blog,
-    {}
-  )
-
-  local owner = ternary(
-    contains(blog, "owner"),
-    blog.owner,
-    {}
-  )
-
-  local artist = ternary(
-    contains(owner, "displayName"),
-    owner.displayName,
-    ""
-  )
-
-  local category = ternary(
-    contains(record, "category"),
-    record.category,
-    {}
-  )
-
-  local description = ternary(
-    contains(category, "title"),
-    category.title,
-    ""
-  )
-
-  local function callback(tbl)
-      return tbl.type == "full_hd"
+  if not playlist then
+    return nil
   end
 
   return {
-    artist = artist,
-    description = description,
+    artist = record.blog and record.blog.owner and record.blog.owner.displayName,
+    description = record.category and record.category.title,
     name = record.title,
-    path = filter(record.data[1].playerUrls, callback)[1].url,
+    path = playlist.url,
   }
 end
 
 
 function probe()
-  return (vlc.access == "http" or vlc.access == "https")
-    and (
-      vlc.path:match("^vkplay%.live/.+") or
-      vlc.path:match("^live%.vkplay%.ru/.+") or
-      vlc.path:match("^live%.vkvideo%.ru/.+")
-    )
+  return (vlc.access == "http" or vlc.access == "https") and (
+    vlc.path:match("^vkplay%.live/.+") or
+    vlc.path:match("^live%.vkplay%.ru/.+") or
+    vlc.path:match("^live%.vkvideo%.ru/.+")
+  )
 end
 
 
