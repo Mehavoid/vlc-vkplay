@@ -1,12 +1,22 @@
-# http://editorconfig.org
+# https://editorconfig.org
 root = true
 
 [*]
-end_of_line = lf
 charset = utf-8
+end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
-
-[*.lua]
-indent_size = 2
 indent_style = space
+indent_size = 2
+
+[*.{yml,yaml}]
+indent_size = 2
+
+[*.ps1]
+# Windows PowerShell 5.1 без BOM читает UTF-8 как ANSI и ломает кириллицу
+charset = utf-8-bom
+end_of_line = crlf
+indent_size = 2
+
+[*.md]
+trim_trailing_whitespace = false

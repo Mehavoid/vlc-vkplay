@@ -1,1 +1,16 @@
+# Артефакты сборки
+/build/
+/dist/
+*.luac
+*.sha256
+SHA256SUMS
 
+# Редакторы и ОС
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc

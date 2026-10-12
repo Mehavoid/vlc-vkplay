@@ -1,80 +1,88 @@
-name: CI
+name: Build
 
 on:
   push:
     tags:
       - '*'
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'scripts/**'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
-  build_linux:
+  build:
+    name: ${{ matrix.target }} (Lua ${{ matrix.lua }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # VLC 3.x для Windows и macOS: встроенный Lua 5.1 с патчем VLC
+          # (размеры в байткоде 32-битные, scripts/patches/vlc3-luac-32bits.patch)
+          - { target: windows, lua: 5.1.5, os: windows-latest }
+          - { target: macos,   lua: 5.1.5, os: macos-latest }
+          # VLC 3.x из Debian/Ubuntu слинкован с системным liblua5.2
+          - { target: linux,   lua: 5.2.4, os: ubuntu-latest }
+          # VLC 4.x использует Lua 5.4 на всех платформах
+          - { target: vlc4,    lua: 5.4.7, os: ubuntu-latest }
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Cache luac
+        uses: actions/cache@v6
+        with:
+          path: build
+          key: luac-v2-${{ runner.os }}-${{ matrix.lua }}-${{ hashFiles('scripts/**') }}
+
+      - name: Build (Windows, MSVC)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build.ps1 -Target ${{ matrix.target }}
+
+      - name: Build (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: scripts/build.sh ${{ matrix.lua }} ${{ matrix.target }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: vkplay-${{ matrix.target }}
+          path: dist/vkplay-${{ matrix.target }}.luac
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - name: Install Lua
-        run: |
-          export DEBIAN_FRONTEND=noninteractive
-          sudo apt update --quiet
-          sudo apt install --quiet --yes --no-install-suggests --no-install-recommends lua5.1 liblua5.1-0-dev
-
-      - name: Build playlist parser
-        run: luac -v -s -o vkplay-linux.luac src/vkplay.lua
-
-      - name: Generate SHA256 checksum
-        run: sha256sum --zero --binary vkplay-linux.luac > vkplay-linux.sha256
-
-      - name: Upload output file
-        uses: actions/upload-artifact@v4
+      - name: Download artifacts
+        uses: actions/download-artifact@v8
         with:
-          name: vkplay-linux
-          path: vkplay-linux.*
-          overwrite: true
+          path: dist
+          pattern: vkplay-*
+          merge-multiple: true
 
-
-  build_macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Lua
+      - name: Add source script and checksums
+        working-directory: dist
         run: |
-          export HOMEBREW_NO_ENV_HINTS=1
-          brew update --quiet
-          brew install --quiet lua
+          cp ../src/vkplay.lua .
+          sha256sum --binary vkplay-*.luac vkplay.lua > SHA256SUMS
+          cat SHA256SUMS
 
-      - name: Build playlist parser
-        run: luac -v -s -o vkplay-macos.luac src/vkplay.lua
-
-      - name: Generate SHA256 checksum
-        run: shasum --binary --algorithm 256 vkplay-macos.luac > vkplay-macos.sha256
-
-      - name: Upload output file
-        uses: actions/upload-artifact@v4
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
         with:
-          name: vkplay-macos
-          path: vkplay-macos.*
-          overwrite: true
-
-
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Install Lua
-        run: |
-          choco install --no-progress --yes lua
-          echo 'C:\Program Files (x86)\Lua\5.1\' | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      - name: Build playlist parser
-        run: luac.exe -s -o vkplay-windows.luac src\vkplay.lua
-
-      - name: Generate SHA256 checksum
-        run: CertUtil -hashFile vkplay-windows.luac SHA256 > vkplay-windows.sha256
-
-      - name: Upload output file
-        uses: actions/upload-artifact@v4
-        with:
-          name: vkplay-windows
-          path: vkplay-windows.*
-          overwrite: true
+          files: dist/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true

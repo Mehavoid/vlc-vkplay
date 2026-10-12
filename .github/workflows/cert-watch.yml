@@ -1,0 +1,39 @@
+name: CDN certificate watch
+
+on:
+  schedule:
+    - cron: '17 6 * * 1'   # по понедельникам
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  watch:
+    # VK/CDN могут не отвечать зарубежным IP: тогда задайте переменную
+    # репозитория CERT_WATCH_RUNNER=self-hosted и поднимите runner в РФ
+    runs-on: ${{ vars.CERT_WATCH_RUNNER || 'ubuntu-latest' }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+
+      - name: Check CDN root certificates
+        id: watch
+        run: python scripts/cert_watch.py
+
+      - name: Open pull request with new roots
+        if: always() && steps.watch.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          add-paths: src/vkplay.lua
+          branch: cert-watch/trust-roots
+          delete-branch: true
+          commit-message: Update bundled CDN root certificates
+          title: Update bundled CDN root certificates
+          body-path: build/cert-watch-pr.md
+          labels: certificates

@@ -2,18 +2,44 @@ name: Luacheck
 
 on:
   push:
+    branches:
+      - '**'
     paths:
       - '**.lua'
-
+      - '.luacheckrc'
+      - '.github/workflows/luacheck.yml'
   pull_request:
     paths:
       - '**.lua'
+      - '.luacheckrc'
+      - '.github/workflows/luacheck.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   luacheck:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Luacheck linter
+      - uses: actions/checkout@v7
+
+      - name: Luacheck
         uses: lunarmodules/luacheck@v1
+
+  syntax:
+    name: Syntax (Lua ${{ matrix.lua }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        lua: ['5.1', '5.2', '5.4']
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install Lua ${{ matrix.lua }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -qq --no-install-recommends lua${{ matrix.lua }}
+
+      - name: Parse src/*.lua
+        run: for f in src/*.lua; do luac${{ matrix.lua }} -p "$f"; done
